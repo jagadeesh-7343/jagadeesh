@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Citizen Bridge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #1e3a8a 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            gap: 30px;
+        }
+
+        /* Floating Track Button */
+        .track-complaint-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f97316 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .track-complaint-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(251, 191, 36, 0.6);
+        }
+
+        .track-complaint-btn::before {
+            content: '🔍';
+            font-size: 18px;
+        }
+
+        @media (max-width: 768px) {
+            .track-complaint-btn {
+                top: 10px;
+                right: 10px;
+                padding: 8px 16px;
+                font-size: 12px;
+            }
+        }
+
+        /* Project Header Styles */
+        .project-header {
+            text-align: center;
+            animation: fadeInDown 0.8s ease;
+            position: relative;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(251, 191, 36, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(251, 191, 36, 0.6); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .project-header h1 {
+            font-size: 52px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            margin-bottom: 12px;
+            background: linear-gradient(
+                90deg, 
+                #fbbf24 0%, 
+                #f97316 15%, 
+                #ef4444 30%, 
+                #ec4899 45%, 
+                #a855f7 60%, 
+                #3b82f6 75%, 
+                #22d3d8 90%, 
+                #fbbf24 100%
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 4s linear infinite;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+
+        .project-header .tagline {
+            font-size: 20px;
+            font-weight: 400;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #fde68a 0%, #fcd34d 50%, #fde68a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+            position: relative;
+        }
+
+        .project-header .tagline::before,
+        .project-header .tagline::after {
+            content: '✦';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #fbbf24;
+            font-size: 12px;
+            -webkit-text-fill-color: #fbbf24;
+        }
+
+        .project-header .tagline::before {
+            left: -25px;
+        }
+
+        .project-header .tagline::after {
+            right: -25px;
+        }
+
+        .project-header .logo-icon {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #ef4444 100%);
+            border-radius: 50%;
+            padding: 16px;
+            margin-bottom: 20px;
+            border: 3px solid rgba(255,255,255,0.5);
+            box-shadow: 
+                0 0 30px rgba(251, 191, 36, 0.5),
+                0 10px 40px rgba(0,0,0,0.3),
+                inset 0 -5px 20px rgba(0,0,0,0.2);
+            animation: pulse 2s ease-in-out infinite, float 3s ease-in-out infinite;
+        }
+
+        .project-header .logo-icon svg {
+            width: 100%;
+            height: 100%;
+            fill: white;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .project-header .decorative-line {
+            width: 150px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #fbbf24, #f97316, #fbbf24, transparent);
+            margin: 15px auto 0;
+            border-radius: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .project-header h1 {
+                font-size: 28px;
+                letter-spacing: 2px;
+            }
+            .project-header .tagline {
+                font-size: 14px;
+            }
+            .project-header .logo-icon {
+                width: 60px;
+                height: 60px;
+                padding: 12px;
+            }
+            .project-header .tagline::before,
+            .project-header .tagline::after {
+                display: none;
+            }
+        }
+
+        .login-container {
+            display: flex;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .login-section {
+            flex: 1;
+            padding: 40px;
+        }
+
+        /* Citizen Login - Left Side */
+        .citizen-login {
+            background: #f8fafc;
+        }
+
+        .citizen-login .icon {
+            width: 50px;
+            height: 50px;
+            background: #e2e8f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .citizen-login .icon svg {
+            width: 24px;
+            height: 24px;
+            fill: #1e3a8a;
+        }
+
+        .citizen-login h2 {
+            color: #1e3a8a;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .citizen-login .subtitle {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        /* Department Login - Right Side */
+        .department-login {
+            background: linear-gradient(180deg, #e0f2fe 0%, #f0f9ff 100%);
+        }
+
+        .department-login .icon {
+            width: 50px;
+            height: 50px;
+            background: #dbeafe;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .department-login .icon svg {
+            width: 24px;
+            height: 24px;
+            fill: #ea580c;
+        }
+
+        .department-login h2 {
+            color: #ea580c;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .department-login .subtitle {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            border-left: 4px solid #dc2626;
+            color: #dc2626;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .department-login .form-group input:focus {
+            border-color: #ea580c;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .remember-me input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .remember-me label {
+            color: #64748b;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .citizen-login .login-btn {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+        }
+
+        .citizen-login .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.4);
+        }
+
+        .department-login .login-btn {
+            background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+            color: white;
+        }
+
+        .department-login .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(234, 88, 12, 0.4);
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .forgot-password a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .department-login .forgot-password a {
+            color: #ea580c;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        .create-account {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .create-account a {
+            color: #ea580c;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .create-account a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+
+                
+            }
+
+            .login-section {
+                padding: 30px;
+            }
+        }
+
+        /* Registration Modal Styles */
+        .register-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .register-modal.active {
+            display: flex;
+        }
+
+        .register-modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .register-modal-content h2 {
+            color: #1e3a8a;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .register-modal-content .modal-subtitle {
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .register-modal-content .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #64748b;
+            transition: color 0.3s;
+        }
+
+        .register-modal-content .close-btn:hover {
+            color: #1e3a8a;
+        }
+
+        .register-form .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .register-form .form-row .form-group {
+            flex: 1;
+        }
+
+        .register-form .form-group {
+            margin-bottom: 15px;
+        }
+
+        .register-form .form-group label {
+            display: block;
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .register-form .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .register-form .form-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4);
+        }
+
+        .back-to-login {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .back-to-login a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-to-login a:hover {
+            text-decoration: underline;
+        }
+
+        .success-message {
+            background: #d1fae5;
+            border-left: 4px solid #059669;
+            color: #059669;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Track Complaint Button -->
+<a href="track_complaint.html" class="track-complaint-btn">Track Complaint</a>
+
+<!-- Project Header -->
+<div class="project-header">
+    <div class="logo-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+        </svg>
+    </div>
+    <h1>CITIZEN BRIDGE X</h1>
+    <p class="tagline">Your gateway to government services</p>
+    <div class="decorative-line"></div>
+</div>
+
+<div class="login-container">
+    <!-- Citizen Login - Left Side -->
+    <div class="login-section citizen-login">
+        <div class="icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+        </div>
+        <h2>Citizen Login</h2>
+        <p class="subtitle">Access your complaints, track issues, and manage your profile</p>
+
+        <form id="citizenForm">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="citizenName" placeholder="Enter your name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="citizenPassword" placeholder="Enter your password" required>
+            </div>
+
+            <div class="remember-me">
+                <input type="checkbox" id="citizenRemember">
+                <label for="citizenRemember">Remember me for 30 days</label>
+            </div>
+
+            <button type="submit" class="login-btn">LOGIN</button>
+
+            <div class="forgot-password">
+                <a href="#">Forgot password?</a>
+            </div>
+
+            <div class="create-account">
+                <a href="#" id="createAccountLink">New here? Create an account</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Department Login - Right Side -->
+    <div class="login-section department-login">
+        <div class="icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/>
+            </svg>
+        </div>
+        <h2>Department Login</h2>
+        <p class="subtitle">Track complaints, generate reports, and manage department operations</p>
+
+        <div class="error-message" id="deptError">Invalid name or ID</div>
+
+        <form id="departmentForm">
+            <div class="form-group">
+                <label>Officer Name</label>
+                <input type="text" id="officerName" placeholder="Enter your name" required>
+            </div>
+
+            <div class="form-group">
+                <label>ID</label>
+                <input type="text" id="departmentId" placeholder="Enter your ID" required>
+            </div>
+
+            <button type="submit" class="login-btn">LOGIN</button>
+        </form>
+    </div>
+</div>
+
+<!-- Registration Modal -->
+<div class="register-modal" id="registerModal">
+    <div class="register-modal-content">
+        <span class="close-btn" id="registerCloseBtn">&times;</span>
+        <h2>Create Account</h2>
+        <p class="modal-subtitle">Register to access Citizen Bridge services</p>
+
+        <div class="success-message" id="registerSuccess">Registration successful! You can now login.</div>
+
+        <form class="register-form" id="registerForm">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="regFullName" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Address</label>
+                <input type="text" id="regAddress" placeholder="Enter your address" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Mandal</label>
+                    <input type="text" id="regMandal" placeholder="Mandal" required>
+                </div>
+                <div class="form-group">
+                    <label>District</label>
+                    <input type="text" id="regDistrict" placeholder="District" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>State</label>
+                    <input type="text" id="regState" placeholder="State" required>
+                </div>
+                <div class="form-group">
+                    <label>Pincode</label>
+                    <input type="text" id="regPincode" placeholder="Pincode" maxlength="6" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="regPhone" placeholder="10-digit number" maxlength="10" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" placeholder="Email address" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Aadhaar Number</label>
+                <input type="text" id="regAadhar" placeholder="12-digit Aadhaar number" maxlength="12" required>
+            </div>
+
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="regUsername" placeholder="Choose a username" required>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="text" id="regPassword" placeholder="Create a password" required>
+            </div>
+
+            <button type="submit" class="register-btn">REGISTER</button>
+
+            <div class="back-to-login">
+                <a href="#" id="backToLoginLink">Already have an account? Login</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Admin credentials
+const adminCredentials = {
+    'electrical': { name: 'harsha', id: '22453-ee-004' },
+    'education': { name: 'jyothsna', id: '25nu5a4012' },
+    'health': { name: 'surya', id: '25nu5a4207' },
+    'transport': { name: 'buddi', id: '22453-cm-012' },
+    'police': { name: 'jagadeesh', id: '25nu5a4203' }
+};
+
+// Citizen Login
+document.getElementById('citizenForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const username = document.getElementById('citizenName').value.trim();
+    const password = document.getElementById('citizenPassword').value;
+    
+    try {
+        const response = await fetch('http://127.0.0.1:5000/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Hydrate full profile from local persistent users so data survives logout/login
+            const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+            const matchedIndex = registeredUsers.findIndex(u =>
+                (u.username && u.username.toLowerCase() === username.toLowerCase()) ||
+                (u.email && u.email.toLowerCase() === username.toLowerCase()) ||
+                (result.user && result.user.id && u.id === result.user.id)
+            );
+
+            let fullUser;
+            if (matchedIndex !== -1) {
+                fullUser = {
+                    ...registeredUsers[matchedIndex],
+                    id: registeredUsers[matchedIndex].id || result.user.id,
+                    username: registeredUsers[matchedIndex].username || result.user.username || username,
+                    fullName: registeredUsers[matchedIndex].fullName || result.user.name || registeredUsers[matchedIndex].name || username,
+                    complaints: Array.isArray(registeredUsers[matchedIndex].complaints)
+                        ? registeredUsers[matchedIndex].complaints
+                        : []
+                };
+                registeredUsers[matchedIndex] = fullUser;
+            } else {
+                fullUser = {
+                    id: result.user.id,
+                    username: result.user.username || username,
+                    fullName: result.user.name || username,
+                    email: '',
+                    phone: '',
+                    address: '',
+                    mandal: '',
+                    district: '',
+                    state: '',
+                    pincode: '',
+                    aadhar: '',
+                    password: password,
+                    complaints: []
+                };
+                registeredUsers.push(fullUser);
+            }
+
+            localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+            localStorage.setItem('loggedInUser', JSON.stringify(fullUser));
+
+            // Redirect to main page
+            window.location.href = 'login.html';
+        } else {
+            alert('Login failed: ' + result.message);
+        }
+    } catch (error) {
+        alert('Error: Could not connect to server. Make sure the server is running (python connet.py)');
+        console.error(error);
+    }
+});
+
+// Department Login
+document.getElementById('departmentForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const rawName = document.getElementById('officerName').value.trim();
+    const rawId = document.getElementById('departmentId').value.trim();
+    const name = rawName;
+    const id = rawId;
+    const errorDiv = document.getElementById('deptError');
+
+    // First try server-side validation (preferred)
+    try {
+        const response = await fetch('http://127.0.0.1:5000/api/department-login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: name, id: id }),
+            cache: 'no-store'
+        });
+
+        const result = await response.json().catch(() => ({}));
+
+        if (response.ok && result.success && result.department) {
+            errorDiv.classList.remove('show');
+            window.location.href = `admin_${result.department}.html`;
+            return;
+        }
+        // if server responded but credentials invalid, fall through to client-side fallback
+    } catch (err) {
+        // backend not reachable - fall back to static client-side check
+        console.warn('Department login backend unreachable, falling back to static check');
+    }
+
+    // Static fallback (keeps existing behavior when backend not running)
+    const lcName = name.toLowerCase();
+    const lcId = id.toLowerCase();
+    let matchedDepartment = null;
+    for (const [dept, creds] of Object.entries(adminCredentials)) {
+        if (creds.name.toLowerCase() === lcName && creds.id.toLowerCase() === lcId) {
+            matchedDepartment = dept;
+            break;
+        }
+    }
+
+    if (matchedDepartment) {
+        errorDiv.classList.remove('show');
+        window.location.href = `admin_${matchedDepartment}.html`;
+    } else {
+        errorDiv.classList.add('show');
+    }
+});
+
+// Registration Modal
+const createAccountLink = document.getElementById('createAccountLink');
+const registerModal = document.getElementById('registerModal');
+const registerCloseBtn = document.getElementById('registerCloseBtn');
+const backToLoginLink = document.getElementById('backToLoginLink');
+const registerForm = document.getElementById('registerForm');
+const registerSuccess = document.getElementById('registerSuccess');
+
+createAccountLink.addEventListener('click', function(e) {
+    e.preventDefault();
+    registerModal.classList.add('active');
+    registerSuccess.classList.remove('show');
+});
+
+registerCloseBtn.addEventListener('click', function() {
+    registerModal.classList.remove('active');
+});
+
+backToLoginLink.addEventListener('click', function(e) {
+    e.preventDefault();
+    registerModal.classList.remove('active');
+});
+
+registerModal.addEventListener('click', function(e) {
+    if (e.target === registerModal) {
+        registerModal.classList.remove('active');
+    }
+});
+
+registerForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    // Get form values
+    const userData = {
+        fullName: document.getElementById('regFullName').value,
+        address: document.getElementById('regAddress').value,
+        mandal: document.getElementById('regMandal').value,
+        district: document.getElementById('regDistrict').value,
+        state: document.getElementById('regState').value,
+        pincode: document.getElementById('regPincode').value,
+        phone: document.getElementById('regPhone').value,
+        email: document.getElementById('regEmail').value,
+        aadhar: document.getElementById('regAadhar').value,
+        username: document.getElementById('regUsername').value,
+        password: document.getElementById('regPassword').value,
+        complaints: [] // Initialize empty complaints array
+    };
+    
+    try {
+        // Get existing registered users from localStorage
+        let registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+        
+        // Check if user already exists
+        if (registeredUsers.find(u => u.email === userData.email)) {
+            alert('This email is already registered!');
+            return;
+        }
+        
+        // Add new user to localStorage
+        registeredUsers.push(userData);
+        localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+        
+        // Also store in localStorage for frontend use
+        localStorage.setItem('citizenUser', JSON.stringify(userData));
+        
+        // Send data to backend API if needed
+        const response = await fetch('http://127.0.0.1:5000/api/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Show success message
+            registerSuccess.classList.add('show');
+            registerSuccess.textContent = result.message;
+            registerForm.reset();
+            
+            // Close modal after 2 seconds
+            setTimeout(function() {
+                registerModal.classList.remove('active');
+                registerSuccess.classList.remove('show');
+                // Redirect to login page
+                window.location.href = 'login.html';
+            }, 2000);
+        } else {
+            alert('Registration failed: ' + result.message);
+        }
+    } catch (error) {
+        // If backend is not available, just use localStorage
+        console.log('Backend not available, using localStorage only');
+        
+        // Show success message
+        registerSuccess.classList.add('show');
+        registerSuccess.textContent = 'Registration successful! You can now login.';
+        registerForm.reset();
+        
+        // Close modal after 2 seconds
+        setTimeout(function() {
+            registerModal.classList.remove('active');
+            registerSuccess.classList.remove('show');
+            // Redirect to login page
+            window.location.href = 'login.html';
+        }, 2000);
+    }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Education Department - Admin Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    background: #f4f6f9;
+}
+
+header {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+}
+
+.back-btn {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 8px 15px;
+    border-radius: 5px;
+    background: rgba(255,255,255,0.2);
+    transition: 0.3s;
+}
+
+.back-btn:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+.logout-btn {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 8px 15px;
+    border-radius: 5px;
+    background: #dc2626;
+    transition: 0.3s;
+}
+
+.logout-btn:hover {
+    background: #b91c1c;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.welcome-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.welcome-card h2 {
+    color: #7c3aed;
+}
+
+.stats {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.stat-card {
+    flex: 1;
+    min-width: 150px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.stat-card h3 {
+    font-size: 32px;
+    color: #7c3aed;
+}
+
+.stat-card p {
+    color: #666;
+    margin-top: 5px;
+}
+
+.complaints-section {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.complaints-section h2 {
+    color: #1e3a8a;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #7c3aed;
+    padding-bottom: 10px;
+}
+
+.complaint-card {
+    background: #f8f9ff;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border-left: 4px solid #7c3aed;
+}
+
+.complaint-card h4 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.complaint-card p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.complaint-card .status {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.status.pending {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.status.resolved {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.action-btns {
+    margin-top: 10px;
+}
+
+.response-box {
+    margin-top: 10px;
+}
+
+.response-box label {
+    display: block;
+    color: #1f2937;
+    margin-bottom: 6px;
+    font-size: 13px;
+}
+
+.response-box textarea {
+    width: 100%;
+    min-height: 70px;
+    resize: vertical;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.action-btns button {
+    padding: 6px 15px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.btn-resolve {
+    background: #059669;
+    color: white;
+}
+
+.btn-resolve:hover {
+    background: #047857;
+}
+
+.btn-ai {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-ai:hover {
+    background: #2563eb;
+}
+
+.no-complaints {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 700px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    max-height: 85vh;
+    overflow: hidden;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 25px 30px;
+    border-radius: 15px 15px 0 0;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: white;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.close-btn {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    font-size: 32px;
+    cursor: pointer;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    background: rgba(255,255,255,0.3);
+    transform: rotate(90deg);
+}
+
+#aiContent {
+    padding: 30px;
+    min-height: 150px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.ai-analysis {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    padding: 25px;
+    border-radius: 12px;
+    border: 2px solid #3b82f6;
+    box-shadow: 0 4px 12px rgba(59,130,246,0.1);
+}
+
+.ai-analysis h3 {
+    color: #1e40af;
+    margin-top: 0;
+    font-size: 18px;
+}
+
+.ai-analysis h4 {
+    color: #1e40af;
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ai-analysis p {
+    color: #1e293b;
+    line-height: 1.8;
+    margin: 10px 0;
+    font-size: 16px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #e5e7eb;
+    border-top: 3px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <a href="login.html" class="back-btn">← Back</a>
+    <h1>Education Department</h1>
+    <p style="margin-top: 5px; opacity: 0.9;">Admin Panel</p>
+    <a href="register.html" class="logout-btn">Logout</a>
+</header>
+
+<div class="container">
+    <div class="welcome-card">
+        <h2>Welcome, Jyothsna</h2>
+        <p>ID: 25nu5a4012</p>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <h3 id="totalCount">0</h3>
+            <p>Total Complaints</p>
+        </div>
+        <div class="stat-card">
+            <h3 id="pendingCount">0</h3>
+            <p>Pending</p>
+        </div>
+        <div class="stat-card">
+            <h3 id="resolvedCount">0</h3>
+            <p>Resolved</p>
+        </div>
+    </div>
+
+    <div class="complaints-section">
+        <h2>Complaints</h2>
+        <div id="complaintsList">
+            <div class="no-complaints">Loading complaints...</div>
+        </div>
+    </div>
+</div>
+
+<!-- AI Analysis Modal -->
+<div id="aiModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>🤖 AI Problem Analysis</h2>
+            <button class="close-btn" onclick="closeAiModal()">&times;</button>
+        </div>
+        <div id="aiContent">
+            <div class="ai-analysis">
+                <p style="text-align: center; color: #64748b;">Loading...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const DEPARTMENT = "Education";
+
+async function loadComplaints() {
+    try {
+        const response = await fetch(`http://127.0.0.1:5000/api/complaints/education`);
+        const complaints = await response.json();
+
+        const total = complaints.length;
+        const pending = complaints.filter(c => c.status === 'Pending').length;
+        const resolved = complaints.filter(c => c.status === 'Resolved').length;
+
+        document.getElementById('totalCount').textContent = total;
+        document.getElementById('pendingCount').textContent = pending;
+        document.getElementById('resolvedCount').textContent = resolved;
+
+        const listDiv = document.getElementById('complaintsList');
+
+        if (complaints.length === 0) {
+            listDiv.innerHTML = '<div class="no-complaints">No complaints for this department.</div>';
+            return;
+        }
+
+        listDiv.innerHTML = complaints.map(c => `
+            <div class="complaint-card" id="complaint-${c.id}">
+                <h4>Complaint #${c.id}</h4>
+                <p><strong>Problem:</strong> ${c.problem_description}</p>
+                ${c.status !== 'Resolved' ? `
+                    <div class="response-box">
+                        <label for="response-${c.id}"><strong>Response to citizen:</strong></label>
+                        <textarea id="response-${c.id}" placeholder="Write resolution response for this complaint..."></textarea>
+                    </div>
+                ` : ''}
+                <p><strong>Address:</strong> ${c.address}, ${c.mandal}, ${c.district}</p>
+                <p><strong>Phone:</strong> ${c.phone}</p>
+                <p><strong>Aadhaar:</strong> ${c.aadhaar}</p>
+                <p><strong>Date:</strong> ${c.created_at}</p>
+                <p><strong>Status:</strong> <span class="status ${c.status.toLowerCase()}">${c.status}</span></p>
+                <div class="action-btns">
+                    <button class="btn-ai ai-trigger" data-problem="${encodeURIComponent(c.problem_description || '')}">🤖 AI Analysis</button>
+                    ${c.status !== 'Resolved' ? `<button class="btn-resolve" onclick="resolveWithResponse(${c.id})">Resolve and Send Response</button>` : ''}
+                </div>
+            </div>
+        `).join('');
+
+        listDiv.querySelectorAll('.ai-trigger').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const problem = decodeURIComponent(btn.dataset.problem || '');
+                analyzeWithAI(problem);
+            });
+        });
+
+    } catch (error) {
+        document.getElementById('complaintsList').innerHTML = 
+            '<div class="no-complaints">Error loading complaints. Please check server/API connection.';
+    }
+}
+
+async function resolveWithResponse(id) {
+    const responseText = (document.getElementById(`response-${id}`)?.value || '').trim();
+    if (!responseText) {
+        alert('Please enter a response message for the citizen before resolving.');
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://127.0.0.1:5000/api/complaints/education/${id}/update-status`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                status: 'Resolved',
+                notes: responseText,
+                changed_by: 'Education Admin'
+            })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            alert('Complaint resolved and response sent successfully.');
+            loadComplaints();
+        } else {
+            alert(data.message || 'Failed to resolve complaint.');
+        }
+    } catch (error) {
+        alert('Error updating complaint status.');
+    }
+}
+
+function closeAiModal() {
+    document.getElementById('aiModal').style.display = 'none';
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById('aiModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+}
+
+async function analyzeWithAI(problemDescription) {
+    const modal = document.getElementById('aiModal');
+    const aiContent = document.getElementById('aiContent');
+    const escapeHtml = (text) => String(text || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+
+    const buildFallbackSummary = (text) => {
+        const cleanText = String(text || '').replace(/\s+/g, ' ').trim();
+        if (!cleanText) {
+            return 'Main issue: Complaint details are incomplete and need manual review by admin.';
+        }
+
+        const lower = cleanText.toLowerCase();
+        const rules = [
+            { keywords: ['water', 'drinking', 'pipeline', 'tap'], issue: 'Main issue: Water supply or drinking water service is disrupted for citizens.' },
+            { keywords: ['electricity', 'power', 'current', 'transformer', 'voltage'], issue: 'Main issue: Electrical service interruption is affecting normal public life.' },
+            { keywords: ['road', 'transport', 'bus', 'traffic', 'street'], issue: 'Main issue: Transport or road infrastructure problems are impacting daily movement.' },
+            { keywords: ['police', 'crime', 'theft', 'safety', 'security'], issue: 'Main issue: Public safety and law-enforcement response requires immediate attention.' },
+            { keywords: ['hospital', 'health', 'doctor', 'medicine', 'sanitation'], issue: 'Main issue: Health service gaps are affecting timely medical support.' },
+            { keywords: ['school', 'teacher', 'education', 'classroom', 'college'], issue: 'Main issue: Education service quality is reduced due to staffing or infrastructure gaps.' },
+            { keywords: ['drainage', 'garbage', 'waste', 'sewage', 'clean'], issue: 'Main issue: Sanitation and waste management issues are creating an unhealthy environment.' }
+        ];
+
+        let mainIssue = 'Main issue: Core public service delivery failure requires department action.';
+        for (const rule of rules) {
+            if (rule.keywords.some((word) => lower.includes(word))) {
+                mainIssue = rule.issue;
+                break;
+            }
+        }
+
+        const sentences = cleanText.split(/[.!?]+/).map((part) => part.trim()).filter(Boolean);
+        const supporting = (sentences.find((part) => part.length > 30) || cleanText).slice(0, 150);
+        return `${mainIssue} Key detail: ${supporting}.`;
+    };
+
+    const renderSummary = (summaryText, sourceLabel) => {
+        aiContent.innerHTML = `<div class="ai-analysis">
+            <h4>📋 AI Analysis Result:</h4>
+            <p><strong>Main Issue:</strong><br><br>${escapeHtml(summaryText)}</p>
+            <p style="margin-top: 15px; font-size: 14px; color: #64748b; background: transparent; border: none; padding: 5px; box-shadow: none;">✨ Output source: ${escapeHtml(sourceLabel)}</p>
+        </div>`;
+    };
+    
+    modal.style.display = 'block';
+    aiContent.innerHTML = `<div class="ai-analysis" style="text-align: center;">
+        <h4 style="justify-content: center;">⏳ Processing Request</h4>
+        <p style="background: transparent; border: none; box-shadow: none; padding: 10px;"><span class="loading-spinner"></span> Analyzing with Phi AI... This may take 20-40 seconds.</p>
+    </div>`;
+    
+    console.log('Starting AI analysis...');
+    console.log('Problem:', problemDescription);
+    
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 45000);
+        
+        console.log('Sending request to Flask AI proxy...');
+        const response = await fetch('http://127.0.0.1:5000/api/ai-analyze-proxy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                problem: problemDescription
+            }),
+            signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        console.log('Response received:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Response data:', data);
+        
+        if (data.success && data.response && data.response.trim()) {
+            const aiLine = data.response.replace(/\s+/g, ' ').trim();
+            const concise = aiLine.split(/(?<=[.!?])\s+/).slice(0, 2).join(' ').slice(0, 220);
+            renderSummary(concise || buildFallbackSummary(problemDescription), data.model || 'phi:latest');
+        } else {
+            renderSummary(buildFallbackSummary(problemDescription), 'fallback logic');
+        }
+    } catch (error) {
+        console.error('AI Analysis Error:', error);
+        renderSummary(buildFallbackSummary(problemDescription), 'fallback logic');
+    }
+}
+
+loadComplaints();
+</script>
+
+</body>
+</html>

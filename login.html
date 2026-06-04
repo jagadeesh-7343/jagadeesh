@@ -1,0 +1,2193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Citizen Bridge X</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    background: #f4f6f9;
+}
+
+/* Floating Track Button */
+.track-complaint-btn {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background: linear-gradient(135deg, #fbbf24 0%, #f97316 100%);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.track-complaint-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(251, 191, 36, 0.6);
+}
+
+.track-complaint-btn::before {
+    content: '🔍';
+    font-size: 18px;
+}
+
+@media (max-width: 768px) {
+    .track-complaint-btn {
+        top: 70px;
+        right: 10px;
+        padding: 8px 16px;
+        font-size: 12px;
+    }
+}
+
+header {
+    background: #1e3a8a;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+}
+
+.language-toggle {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+}
+
+.language-toggle button {
+    padding: 6px 12px;
+    margin-right: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.profile {
+    background: white;
+    color: #1e3a8a;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.search-container {
+    margin: 30px auto;
+    text-align: center;
+}
+
+.search-container input {
+    width: 60%;
+    padding: 12px;
+    border-radius: 25px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+.departments {
+    padding: 30px;
+    text-align: center;
+}
+
+.departments h2 {
+    margin-bottom: 20px;
+    color: #1e3a8a;
+}
+
+.card-container {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+.card {
+    width: 220px;
+    height: 220px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: 0.3s;
+    overflow: hidden;
+}
+
+.card img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+}
+
+.card h3 {
+    padding: 10px;
+    color: #1e3a8a;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+    .search-container input {
+        width: 85%;
+    }
+}
+
+/* AI Assistant Styles */
+.ai-assistant {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+}
+
+.ai-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.ai-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.ai-btn svg {
+    width: 30px;
+    height: 30px;
+    fill: white;
+}
+
+.ai-label {
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    background: #333;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.ai-btn:hover + .ai-label {
+    opacity: 1;
+}
+
+/* AI Chat Modal */
+.ai-modal {
+    display: none;
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    width: 350px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    z-index: 999;
+    overflow: hidden;
+}
+
+.ai-modal.active {
+    display: block;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ai-modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ai-modal-header h3 {
+    margin: 0;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ai-modal-header h3 svg {
+    width: 24px;
+    height: 24px;
+    fill: white;
+}
+
+.ai-close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.ai-modal-body {
+    padding: 20px;
+}
+
+.ai-modal-body p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.ai-textarea {
+    width: 100%;
+    height: 120px;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 14px;
+    resize: none;
+    transition: border-color 0.3s;
+}
+
+.ai-textarea:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.ai-submit-btn {
+    margin-top: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    width: 100%;
+    transition: transform 0.2s;
+}
+
+.ai-submit-btn:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+}
+
+.ai-response {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f8f9ff;
+    border-radius: 10px;
+    border-left: 4px solid #667eea;
+    display: none;
+}
+
+.ai-response.active {
+    display: block;
+}
+
+.ai-response p {
+    margin: 0;
+    color: #333;
+}
+
+/* Admin Login Styles */
+.profile-section {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.login-link {
+    background: #059669;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 12px;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.login-link:hover {
+    background: #047857;
+}
+
+/* User Login Modal Styles */
+.login-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-modal.active {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.login-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 400px;
+    padding: 40px;
+    position: relative;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.login-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #666;
+}
+
+.login-close:hover {
+    color: #1e3a8a;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-header h2 {
+    color: #1e3a8a;
+    margin-bottom: 5px;
+    font-size: 24px;
+}
+
+.login-header p {
+    color: #666;
+    font-size: 14px;
+}
+
+.login-form {
+    display: block;
+}
+
+.login-form.hidden {
+    display: none;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #1e3a8a;
+}
+
+.remember-forgot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 13px;
+}
+
+.remember-forgot input[type="checkbox"] {
+    width: auto;
+    margin-right: 5px;
+}
+
+.remember-forgot a {
+    color: #059669;
+    text-decoration: none;
+}
+
+.remember-forgot a:hover {
+    text-decoration: underline;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #1e3a8a 0%, #059669 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(30, 58, 138, 0.3);
+}
+
+.login-divider {
+    text-align: center;
+    margin: 20px 0;
+    color: #999;
+    font-size: 13px;
+}
+
+.social-login {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.social-btn {
+    flex: 1;
+    padding: 10px;
+    border: 2px solid #e0e0e0;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: 0.3s;
+}
+
+.social-btn:hover {
+    border-color: #1e3a8a;
+}
+
+.toggle-form {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #666;
+}
+
+.toggle-form a {
+    color: #1e3a8a;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.toggle-form a:hover {
+    text-decoration: underline;
+}
+
+/* User Profile Section */
+.user-profile-section {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-profile-section.logged-in {
+    display: flex !important;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 15px;
+    border-radius: 20px;
+}
+
+.user-avatar {
+    width: 30px;
+    height: 30px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1e3a8a;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.user-name {
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.profile-menu {
+    display: none;
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1500;
+    min-width: 180px;
+}
+
+.profile-menu.active {
+    display: block;
+}
+
+.profile-menu a,
+.profile-menu button {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    background: none;
+    text-align: left;
+    color: #333;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.profile-menu a:hover,
+.profile-menu button:hover {
+    background: #f0f0f0;
+}
+
+.profile-menu button:first-child {
+    border-radius: 8px 8px 0 0;
+}
+
+.profile-menu button:last-child {
+    border-radius: 0 0 8px 8px;
+    border-top: 1px solid #e0e0e0;
+    color: #dc2626;
+}
+
+/* My Profile Modal */
+.profile-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2100;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.profile-modal.active {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+}
+
+.profile-modal-content {
+    background: white;
+    border-radius: 15px;
+    max-width: 800px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.profile-modal-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 15px 15px 0 0;
+}
+
+.profile-modal-header h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.profile-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.profile-modal-body {
+    padding: 30px;
+}
+
+.profile-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.profile-tab {
+    padding: 12px 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: #666;
+    font-weight: bold;
+    transition: all 0.3s;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+}
+
+.profile-tab.active {
+    color: #1e3a8a;
+    border-bottom-color: #1e3a8a;
+}
+
+.profile-tab-content {
+    display: none;
+}
+
+.profile-tab-content.active {
+    display: block;
+}
+
+.profile-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-label {
+    color: #666;
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.info-value {
+    color: #333;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.complaints-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.complaint-card {
+    background: #f8fafc;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 15px;
+    transition: all 0.3s;
+}
+
+.complaint-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.complaint-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.complaint-id {
+    color: #1e3a8a;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.complaint-status {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.status-filed {
+    background: #dbeafe;
+    color: #1e3a8a;
+}
+
+.status-in-progress {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-resolved {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.complaint-subject {
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.complaint-details {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.complaint-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #999;
+}
+
+.tracking-id-section {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.tracking-id-label {
+    font-size: 12px;
+    color: #666;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.tracking-id-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f0f9ff;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 2px solid #3b82f6;
+}
+
+.tracking-id-text {
+    flex: 1;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 14px;
+    color: #1e3a8a;
+    letter-spacing: 1px;
+}
+
+.btn-copy-small,
+.btn-track-small {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.btn-copy-small {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-copy-small:hover {
+    background: #2563eb;
+}
+
+.btn-track-small {
+    background: linear-gradient(135deg, #fbbf24 0%, #f97316 100%);
+    color: white;
+}
+
+.btn-track-small:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+}
+
+.no-complaints {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+}
+
+.no-complaints svg {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+/* Edit Profile Styles */
+.edit-mode-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.edit-btn {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.2s;
+}
+
+.edit-btn:hover {
+    transform: translateY(-2px);
+}
+
+.edit-btn.save {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+}
+
+.edit-btn.cancel {
+    background: #dc2626;
+    margin-left: 10px;
+}
+
+.edit-form {
+    display: none;
+}
+
+.edit-form.active {
+    display: block;
+}
+
+.edit-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.edit-form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-form-group label {
+    color: #666;
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.edit-form-group input,
+.edit-form-group textarea {
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+    transition: border-color 0.3s;
+}
+
+.edit-form-group input:focus,
+.edit-form-group textarea:focus {
+    outline: none;
+    border-color: #1e3a8a;
+}
+
+.edit-form-group textarea {
+    resize: vertical;
+    height: 80px;
+    grid-column: 1 / -1;
+}
+
+.view-info {
+    display: block;
+}
+
+.view-info.hidden {
+    display: none;
+}
+
+.save-notice {
+    background: #d1fae5;
+    color: #065f46;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: none;
+    text-align: center;
+    font-weight: bold;
+}
+
+.save-notice.show {
+    display: block;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Track Complaint Button -->
+<a href="track_complaint.html" class="track-complaint-btn">Track Complaint</a>
+
+<header>
+    <div class="language-toggle">
+        <button onclick="setLanguage('en')">English</button>
+        <button onclick="setLanguage('te')">తెలుగు</button>
+        <button onclick="setLanguage('hi')">हिन्दी</button>
+    </div>
+
+    <h1 id="title">CITIZEN BRIDGE X</h1>
+    <p id="subtitle" style="margin-top: 5px; font-size: 14px; opacity: 0.9;">Your gateway to government services</p>
+    <div class="profile-section">
+        <!-- Not logged in view -->
+        <div class="login-link-container">
+            <a onclick="openLoginModal()" class="login-link" id="loginLink" style="cursor: pointer;">Login / Register</a>
+        </div>
+        
+        <!-- Logged in view -->
+        <div class="user-profile-section" id="userProfileSection" style="display: none;">
+            <div class="user-info" onclick="toggleProfileMenu()">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div class="user-name" id="userNameDisplay">User</div>
+            </div>
+            <div class="profile-menu" id="profileMenu">
+                <button onclick="openProfileModal()">My Profile</button>
+                <button onclick="logoutUser()">Logout</button>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+<div class="search-container">
+    <input type="text" id="search" placeholder="Search departments or services...">
+</div>
+
+<section class="departments">
+    <h2 id="deptTitle">Departments</h2>
+    <p id="deptSubtitle" style="margin-bottom: 20px; color: #666;">Select a department to explore services</p>
+
+    <div class="card-container">
+
+        <div class="card" onclick="openDepartment('Electrical')">
+            <img src="electrical2.jpeg" alt="Electrical">
+            <h3 id="electrical">Electrical</h3>
+        </div>
+
+        <div class="card" onclick="openDepartment('Transport')">
+            <img src="transport.jpeg" alt="Transport">
+            <h3 id="transport">Transport</h3>
+        </div>
+
+        <div class="card" onclick="openDepartment('Education')">
+            <img src="education.jpeg" alt="Education">
+            <h3 id="education">Education</h3>
+        </div>
+
+        <div class="card" onclick="openDepartment('Health')">
+            <img src="health.jpeg" alt="Health">
+            <h3 id="health">Health</h3>
+        </div>
+
+        <div class="card" onclick="openDepartment('Police')">
+            <img src="police" alt="Police">
+            <h3 id="police">Police</h3>
+        </div>
+
+    </div>
+</section>
+
+<script>
+const translations = {
+    en: {
+        title: "CITIZEN BRIDGE X",
+        subtitle: "Your gateway to government services",
+        loginLink: "Login / Register",
+        search: "Search departments or services...",
+        deptTitle: "Departments",
+        deptSubtitle: "Select a department to explore services",
+        electrical: "Electrical",
+        transport: "Transport",
+        education: "Education",
+        health: "Health",
+        police: "Police",
+        aiLabel: "AI Assistant",
+        aiTitle: "AI Problem Evaluator",
+        aiDescription: "Describe your problem below and our AI will help evaluate and guide you:",
+        aiPlaceholder: "Enter your problem here...",
+        aiAnalyze: "Analyze"
+    },
+    te: {
+        title: "సిటిజన్ బ్రిడ్జ్ X",
+        subtitle: "ప్రభుత్వ సేవలకు మీ ద్వారం",
+        loginLink: "లాగిన్ / నమోదు",
+        search: "శాఖలు లేదా సేవలను వెతకండి...",
+        deptTitle: "శాఖలు",
+        deptSubtitle: "సేవలను అన్వేషించడానికి ఒక శాఖను ఎంచుకోండి",
+        electrical: "విద్యుత్ శాఖ",
+        transport: "రవాణా శాఖ",
+        education: "విద్యాశాఖ",
+        health: "ఆరోగ్య శాఖ",
+        police: "పోలీస్ శాఖ",
+        aiLabel: "AI సహాయకుడు",
+        aiTitle: "AI సమస్య మూల్యాంకనం",
+        aiDescription: "మీ సమస్యను క్రింద వివరించండి మరియు మా AI మీకు సహాయం చేస్తుంది:",
+        aiPlaceholder: "మీ సమస్యను ఇక్కడ నమోదు చేయండి...",
+        aiAnalyze: "విశ్లేషించు"
+    },
+    hi: {
+        title: "सिटिजन ब्रिज X",
+        subtitle: "सरकारी सेवाओं के लिए आपका द्वार",
+        loginLink: "लॉगिन / रजिस्टर",
+        search: "विभाग या सेवाएँ खोजें...",
+        deptTitle: "विभाग",
+        deptSubtitle: "सेवाओं का पता लगाने के लिए एक विभाग चुनें",
+        electrical: "विद्युत विभाग",
+        transport: "परिवहन विभाग",
+        education: "शिक्षा विभाग",
+        health: "स्वास्थ्य विभाग",
+        police: "पुलिस विभाग",
+        aiLabel: "AI सहायक",
+        aiTitle: "AI समस्या मूल्यांकनकर्ता",
+        aiDescription: "नीचे अपनी समस्या का वर्णन करें और हमारी AI आपकी मदद करेगी:",
+        aiPlaceholder: "यहाँ अपनी समस्या दर्ज करें...",
+        aiAnalyze: "विश्लेषण करें"
+    }
+};
+
+function setLanguage(lang) {
+    document.getElementById("title").innerText = translations[lang].title;
+    document.getElementById("subtitle").innerText = translations[lang].subtitle;
+    document.getElementById("loginLink").innerText = translations[lang].loginLink;
+    document.getElementById("search").placeholder = translations[lang].search;
+    document.getElementById("deptTitle").innerText = translations[lang].deptTitle;
+    document.getElementById("deptSubtitle").innerText = translations[lang].deptSubtitle;
+    document.getElementById("electrical").innerText = translations[lang].electrical;
+    document.getElementById("transport").innerText = translations[lang].transport;
+    document.getElementById("education").innerText = translations[lang].education;
+    document.getElementById("health").innerText = translations[lang].health;
+    document.getElementById("police").innerText = translations[lang].police;
+    // AI Assistant translations
+    document.querySelector(".ai-label").innerText = translations[lang].aiLabel;
+    document.querySelector(".ai-modal-header h3").innerHTML = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg> ${translations[lang].aiTitle}`;
+    document.getElementById("aiDescription").innerText = translations[lang].aiDescription;
+    document.getElementById("aiTextarea").placeholder = translations[lang].aiPlaceholder;
+    document.getElementById("aiAnalyzeBtn").innerText = translations[lang].aiAnalyze;
+    // Save language preference
+    localStorage.setItem('preferredLanguage', lang);
+}
+
+function openDepartment(deptName) {
+    window.location.href = "form.html?dept=" + encodeURIComponent(deptName);
+}
+
+// Load saved language preference on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const savedLang = localStorage.getItem('preferredLanguage');
+    if (savedLang && translations[savedLang]) {
+        setLanguage(savedLang);
+    }
+    
+    // Check if user is already logged in
+    updateUserProfile();
+});
+</script>
+
+<!-- AI Assistant Button and Modal -->
+<div class="ai-assistant">
+    <button class="ai-btn" id="aiBtn" title="AI Assistant">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+        </svg>
+    </button>
+    <span class="ai-label">AI Assistant</span>
+
+    <div class="ai-modal" id="aiModal">
+        <div class="ai-modal-header">
+            <h3>
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                </svg>
+                Department Finder (Minimax AI)
+            </h3>
+            <button class="ai-close-btn" id="aiCloseBtn">&times;</button>
+        </div>
+        <div class="ai-modal-body">
+            <p id="aiDescription">Tell us about your problem, and minimax-m2.5:cloud AI will suggest the right department:</p>
+            <form id="aiForm">
+                <textarea class="ai-textarea" id="aiTextarea" placeholder="Describe your issue briefly..."></textarea>
+                <button type="submit" class="ai-submit-btn" id="aiAnalyzeBtn">🤖 Analyze with Minimax AI</button>
+            </form>
+            <div class="ai-response" id="aiResponse"></div>
+        </div>
+    </div>
+</div>
+
+<!-- User Login Modal -->
+<div class="login-modal" id="loginModal">
+    <div class="login-container">
+        <button class="login-close" onclick="closeLoginModal()">&times;</button>
+
+        <!-- Login Form -->
+        <form class="login-form" id="loginForm">
+            <div class="login-header">
+                <h2 id="loginTitle">User Login</h2>
+                <p id="loginSubtitle">Access your citizen account</p>
+            </div>
+
+            <div class="form-group">
+                <label for="email" id="emailLabel">Email or Username</label>
+                <input type="text" id="email" name="email" placeholder="Enter your email or username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password" id="passwordLabel">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+
+            <div class="remember-forgot">
+                <label style="display: flex; align-items: center;">
+                    <input type="checkbox" id="remember" name="remember">
+                    <span id="rememberLabel" style="margin-left: 5px;">Remember me</span>
+                </label>
+                <a href="#" id="forgotLink">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="login-btn" id="submitBtn">Login</button>
+        </form>
+
+        <!-- Register Form -->
+        <form class="login-form hidden" id="registerForm">
+            <div class="login-header">
+                <h2 id="registerTitle">Create Account</h2>
+                <p id="registerSubtitle">Register as a citizen</p>
+            </div>
+
+            <div class="form-group">
+                <label for="fullname" id="fullnameLabel">Full Name</label>
+                <input type="text" id="fullname" name="fullname" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="regemail" id="regemailLabel">Email</label>
+                <input type="email" id="regemail" name="regemail" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="regphone" id="regphoneLabel">Phone Number</label>
+                <input type="tel" id="regphone" name="regphone" placeholder="Enter your phone number" required>
+            </div>
+
+            <div class="form-group">
+                <label for="regpassword" id="regpasswordLabel">Password</label>
+                <input type="password" id="regpassword" name="regpassword" placeholder="Create a password" required>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmpassword" id="confirmpasswordLabel">Confirm Password</label>
+                <input type="password" id="confirmpassword" name="confirmpassword" placeholder="Confirm your password" required>
+            </div>
+
+            <button type="submit" class="login-btn" id="registerBtn">Register</button>
+        </form>
+
+        <div class="toggle-form">
+            <span id="toggleText">Don't have an account? </span>
+            <a onclick="toggleForm()" id="toggleLink">Register here</a>
+        </div>
+    </div>
+</div>
+
+<!-- User Profile Modal -->
+<div class="profile-modal" id="profileModal">
+    <div class="profile-modal-content">
+        <div class="profile-modal-header">
+            <h2>My Profile</h2>
+            <button class="profile-close" onclick="closeProfileModal()">&times;</button>
+        </div>
+        <div class="profile-modal-body">
+            <div class="profile-tabs">
+                <button class="profile-tab active" onclick="switchProfileTab('details')">Personal Details</button>
+                <button class="profile-tab" onclick="switchProfileTab('complaints')">My Complaints</button>
+            </div>
+
+            <!-- Personal Details Tab -->
+            <div class="profile-tab-content active" id="detailsTab">
+                <div class="save-notice" id="saveNotice">Profile updated successfully!</div>
+                
+                <div id="incompleteNotice" style="background: #fef3c7; border-left: 4px solid #d97706; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; color: #92400e;">
+                    <strong>⚠️ Your profile is incomplete!</strong> Some fields are empty. Click "Edit Profile" to fill them in.
+                </div>
+                
+                <div class="edit-mode-display">
+                    <h3 style="margin: 0; color: #333;">Your Information</h3>
+                    <div>
+                        <button class="edit-btn" id="editBtnToggle" onclick="toggleEditMode()">Edit Profile</button>
+                    </div>
+                </div>
+
+                <!-- View Mode -->
+                <div class="view-info" id="viewInfo">
+                    <div class="profile-info-grid">
+                        <div class="info-item">
+                            <label class="info-label">Full Name</label>
+                            <div class="info-value" id="profileFullName">-</div>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label">Email</label>
+                            <div class="info-value" id="profileEmail">-</div>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label">Phone Number</label>
+                            <div class="info-value" id="profilePhone">-</div>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label">Aadhaar Number</label>
+                            <div class="info-value" id="profileAadhar">-</div>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label">Address</label>
+                            <div class="info-value" id="profileAddress">-</div>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label">Mandal</label>
+                            <div class="info-value" id="profileMandal">-</div>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label">District</label>
+                            <div class="info-value" id="profileDistrict">-</div>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label">State</label>
+                            <div class="info-value" id="profileState">-</div>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label">Pincode</label>
+                            <div class="info-value" id="profilePincode">-</div>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label">Username</label>
+                            <div class="info-value" id="profileUsername">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit Mode Form -->
+                <form class="edit-form" id="editForm">
+                    <div class="edit-info-grid">
+                        <div class="edit-form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="editFullName" required>
+                        </div>
+                        <div class="edit-form-group">
+                            <label>Email</label>
+                            <input type="email" id="editEmail" required>
+                        </div>
+                        <div class="edit-form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="editPhone" placeholder="10-digit number" maxlength="10">
+                        </div>
+                        <div class="edit-form-group">
+                            <label>Aadhaar Number</label>
+                            <input type="text" id="editAadhar" placeholder="12-digit number" maxlength="12">
+                        </div>
+                        <div class="edit-form-group">
+                            <label>Address</label>
+                            <textarea id="editAddress"></textarea>
+                        </div>
+                        <div class="edit-form-group">
+                            <label>Mandal</label>
+                            <input type="text" id="editMandal">
+                        </div>
+                        <div class="edit-form-group">
+                            <label>District</label>
+                            <input type="text" id="editDistrict">
+                        </div>
+                        <div class="edit-form-group">
+                            <label>State</label>
+                            <input type="text" id="editState">
+                        </div>
+                        <div class="edit-form-group">
+                            <label>Pincode</label>
+                            <input type="text" id="editPincode" placeholder="6-digit number" maxlength="6">
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; display: flex; gap: 10px;">
+                        <button type="submit" class="edit-btn save">Save Changes</button>
+                        <button type="button" class="edit-btn cancel" onclick="toggleEditMode()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Complaints Tab -->
+            <div class="profile-tab-content" id="complaintsTab">
+                <div class="complaints-list" id="complaintsList">
+                    <div class="no-complaints">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="currentColor"/>
+                        </svg>
+                        <p id="noComplaintsText">No complaints filed yet. Go submit a complaint!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// AI Assistant Toggle
+const aiBtn = document.getElementById('aiBtn');
+const aiModal = document.getElementById('aiModal');
+const aiCloseBtn = document.getElementById('aiCloseBtn');
+const aiForm = document.getElementById('aiForm');
+const aiTextarea = document.getElementById('aiTextarea');
+const aiResponse = document.getElementById('aiResponse');
+
+aiBtn.addEventListener('click', () => {
+    aiModal.classList.toggle('active');
+});
+
+aiCloseBtn.addEventListener('click', () => {
+    aiModal.classList.remove('active');
+});
+
+aiForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const problem = aiTextarea.value.trim();
+    if (problem) {
+        // Show loading
+        aiResponse.classList.add('active');
+        aiResponse.innerHTML = '<p>🤖 Analyzing with minimax AI... (may take 20-30 seconds)</p>';
+
+        try {
+            // Call Ollama directly with minimax-m2.5:cloud model
+            const prompt = `${problem}\n\nBased on the problem above, which ONE department should handle this complaint?\nDepartments: Education, Police, Health, Electrical, Transport\n\nRespond with ONLY the department name, nothing else.`;
+            
+            const response = await fetch('http://127.0.0.1:11434/api/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    model: 'minimax-m2.5:cloud',
+                    prompt: prompt,
+                    stream: false
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Ollama service not available');
+            }
+
+            const data = await response.json();
+            const aiText = (data.response || '').trim();
+            
+            // Extract department name from AI response
+            const deptMap = {
+                'education': 'Education',
+                'police': 'Police',
+                'health': 'Health',
+                'electrical': 'Electrical',
+                'transport': 'Transport'
+            };
+            
+            let sector = 'Transport'; // default fallback
+            
+            // Check for department keywords in response
+            for (const [key, value] of Object.entries(deptMap)) {
+                if (aiText.toLowerCase().includes(key)) {
+                    sector = value;
+                    break;
+                }
+            }
+
+            aiResponse.innerHTML = `<button onclick="window.location.href='form.html?dept=${encodeURIComponent(sector)}'" style="width:100%; padding:12px; font-size:16px; font-weight:bold; color:white; background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); border:none; border-radius:8px; cursor:pointer;">→ Go to ${sector} Department</button>`;
+        } catch (error) {
+            aiResponse.innerHTML = '<p style="color:red;">Error: Make sure Ollama is running with minimax-m2.5:cloud model installed</p>';
+            console.error('AI Error:', error);
+        }
+
+        aiTextarea.value = '';
+    }
+});
+
+// User Login Modal Management
+function openLoginModal() {
+    document.getElementById('loginModal').classList.add('active');
+}
+
+function closeLoginModal() {
+    document.getElementById('loginModal').classList.remove('active');
+    // Reset to login form
+    resetLoginForm();
+}
+
+function toggleForm() {
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const toggleLink = document.getElementById('toggleLink');
+    const toggleText = document.getElementById('toggleText');
+
+    loginForm.classList.toggle('hidden');
+    registerForm.classList.toggle('hidden');
+
+    if (loginForm.classList.contains('hidden')) {
+        toggleText.innerText = "Already have an account? ";
+        toggleLink.innerText = "Login here";
+    } else {
+        toggleText.innerText = "Don't have an account? ";
+        toggleLink.innerText = "Register here";
+    }
+}
+
+function resetLoginForm() {
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+
+    if (registerForm && !registerForm.classList.contains('hidden')) {
+        toggleForm();
+    }
+
+    loginForm.reset();
+}
+
+// Close modal when clicking outside the container
+document.getElementById('loginModal').addEventListener('click', function(event) {
+    if (event.target === this) {
+        closeLoginModal();
+    }
+});
+
+// Handle Login Form Submission
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    console.log('Login attempt with email:', email);
+    
+    // Get registered users from localStorage
+    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+    
+    console.log('Registered users in storage:', registeredUsers);
+    
+    // Check if user exists and password matches
+    let user = registeredUsers.find(u =>
+        (u.email === email || u.username === email) && u.password === password
+    );
+
+    if (user) {
+        console.log('User found:', user);
+        
+        // Login successful - always hydrate from persistent user record
+        const persistentUser = {
+            ...user,
+            complaints: Array.isArray(user.complaints) ? user.complaints : []
+        };
+        localStorage.setItem('loggedInUser', JSON.stringify(persistentUser));
+        
+        console.log('Stored loggedInUser:', JSON.parse(localStorage.getItem('loggedInUser')));
+        
+        alert('Login successful! Welcome ' + (persistentUser.fullName || persistentUser.username));
+        closeLoginModal();
+        updateUserProfile(); // Update header with user info
+        
+        // Reset form
+        document.getElementById('loginForm').reset();
+    } else {
+        console.log('User not found or invalid credentials');
+        alert('Invalid credentials. Please check your email/username and password.');
+    }
+});
+
+// Handle Register Form Submission
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const fullname = document.getElementById('fullname').value;
+    const email = document.getElementById('regemail').value;
+    const phone = document.getElementById('regphone').value;
+    const password = document.getElementById('regpassword').value;
+    const confirmPassword = document.getElementById('confirmpassword').value;
+
+    if (password !== confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+    }
+
+    // Create user object with all fields
+    const newUser = {
+        fullName: fullname,
+        email: email,
+        phone: phone,
+        password: password,
+        address: '', // Empty - user should fill via Edit Profile
+        mandal: '',
+        district: '',
+        state: '',
+        pincode: '',
+        aadhar: '',
+        username: email.split('@')[0], // Use email prefix as username
+        complaints: []
+    };
+
+    // Get existing registered users
+    let registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+    
+    // Check if user already exists
+    if (registeredUsers.find(u => u.email === email)) {
+        alert('This email is already registered!');
+        return;
+    }
+
+    // Add new user
+    registeredUsers.push(newUser);
+    localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+    
+    // Also log them in immediately
+    localStorage.setItem('loggedInUser', JSON.stringify(newUser));
+
+    alert('Registration successful! Please complete your profile with address details.');
+    
+    // Close login modal
+    closeLoginModal();
+    
+    // Update header
+    updateUserProfile();
+    
+    // Open profile modal in edit mode to let them add address details
+    setTimeout(() => {
+        openProfileModal();
+        setTimeout(() => {
+            toggleEditMode(); // Automatically open edit mode
+        }, 500);
+    }, 300);
+});
+
+// Profile Management Functions
+function updateUserProfile() {
+    const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    if (loggedInUser) {
+        // Show logged-in profile section
+        document.getElementById('userProfileSection').style.display = 'flex';
+        document.querySelector('.login-link-container').style.display = 'none';
+        
+        // Update user avatar and name
+        const firstName = loggedInUser.fullName ? loggedInUser.fullName.charAt(0).toUpperCase() : 'U';
+        document.getElementById('userAvatar').textContent = firstName;
+        document.getElementById('userNameDisplay').textContent = loggedInUser.fullName || 'User';
+    } else {
+        // Show login link
+        document.getElementById('userProfileSection').style.display = 'none';
+        document.querySelector('.login-link-container').style.display = 'block';
+    }
+}
+
+function toggleProfileMenu() {
+    const menu = document.getElementById('profileMenu');
+    menu.classList.toggle('active');
+}
+
+// Close profile menu when clicking outside
+document.addEventListener('click', function(e) {
+    const profileSection = document.getElementById('userProfileSection');
+    const menu = document.getElementById('profileMenu');
+    if (profileSection && !profileSection.contains(e.target) && menu) {
+        menu.classList.remove('active');
+    }
+});
+
+async function openProfileModal() {
+    const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    
+    console.log('Opening profile modal...');
+    console.log('Logged in user:', loggedInUser);
+    console.log('All registered users:', JSON.parse(localStorage.getItem('registeredUsers')));
+    
+    if (loggedInUser) {
+        document.getElementById('profileModal').classList.add('active');
+        document.getElementById('profileMenu').classList.remove('active');
+        
+        // Ensure we have all the data - fetch fresh from registeredUsers if needed
+        const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+        const freshUserData = registeredUsers.find(u =>
+            (loggedInUser.email && u.email === loggedInUser.email) ||
+            (loggedInUser.username && u.username === loggedInUser.username) ||
+            (loggedInUser.id && u.id === loggedInUser.id)
+        );
+        
+        // Use fresh data if available, otherwise use loggedInUser
+        let userDataToDisplay = freshUserData || loggedInUser;
+
+        // Sync latest complaint statuses from backend (including admin resolved updates)
+        userDataToDisplay = await syncUserComplaintsWithServer(userDataToDisplay);
+        
+        console.log('User data to display:', userDataToDisplay);
+        
+        // Populate user details in view mode
+        const fullName = userDataToDisplay.fullName || '-';
+        const email = userDataToDisplay.email || '-';
+        const phone = userDataToDisplay.phone || '-';
+        const aadhar = userDataToDisplay.aadhar || '-';
+        const address = userDataToDisplay.address || '-';
+        const mandal = userDataToDisplay.mandal || '-';
+        const district = userDataToDisplay.district || '-';
+        const state = userDataToDisplay.state || '-';
+        const pincode = userDataToDisplay.pincode || '-';
+        const username = userDataToDisplay.username || '-';
+        
+        console.log('Setting fullName to:', fullName);
+        
+        document.getElementById('profileFullName').textContent = fullName;
+        document.getElementById('profileEmail').textContent = email;
+        document.getElementById('profilePhone').textContent = phone;
+        document.getElementById('profileAadhar').textContent = aadhar;
+        document.getElementById('profileAddress').textContent = address;
+        document.getElementById('profileMandal').textContent = mandal;
+        document.getElementById('profileDistrict').textContent = district;
+        document.getElementById('profileState').textContent = state;
+        document.getElementById('profilePincode').textContent = pincode;
+        document.getElementById('profileUsername').textContent = username;
+        
+        // Also populate edit form with current data
+        document.getElementById('editFullName').value = fullName === '-' ? '' : fullName;
+        document.getElementById('editEmail').value = email === '-' ? '' : email;
+        document.getElementById('editPhone').value = phone === '-' ? '' : phone;
+        document.getElementById('editAadhar').value = aadhar === '-' ? '' : aadhar;
+        document.getElementById('editAddress').value = address === '-' ? '' : address;
+        document.getElementById('editMandal').value = mandal === '-' ? '' : mandal;
+        document.getElementById('editDistrict').value = district === '-' ? '' : district;
+        document.getElementById('editState').value = state === '-' ? '' : state;
+        document.getElementById('editPincode').value = pincode === '-' ? '' : pincode;
+        
+        // Check if profile is complete
+        const incompleteNotice = document.getElementById('incompleteNotice');
+        const isIncomplete = !userDataToDisplay.fullName || 
+                            !userDataToDisplay.phone || 
+                            !userDataToDisplay.address ||
+                            !userDataToDisplay.mandal ||
+                            !userDataToDisplay.district ||
+                            !userDataToDisplay.state ||
+                            !userDataToDisplay.pincode ||
+                            !userDataToDisplay.aadhar;
+        
+        console.log('Is profile incomplete?', isIncomplete);
+        
+        if (isIncomplete) {
+            incompleteNotice.style.display = 'block';
+        } else {
+            incompleteNotice.style.display = 'none';
+        }
+        
+        // Load complaints
+        loadUserComplaints();
+    } else {
+        alert('No user logged in. Please login first.');
+    }
+}
+
+function toggleEditMode() {
+    const viewInfo = document.getElementById('viewInfo');
+    const editForm = document.getElementById('editForm');
+    const editBtn = document.getElementById('editBtnToggle');
+    
+    viewInfo.classList.toggle('hidden');
+    editForm.classList.toggle('active');
+    
+    if (editForm.classList.contains('active')) {
+        editBtn.textContent = 'Cancel';
+        editBtn.style.background = '#dc2626';
+    } else {
+        editBtn.textContent = 'Edit Profile';
+        editBtn.style.background = '';
+    }
+}
+
+// Handle profile edit form submission
+document.getElementById('editForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    
+    // Update user data
+    const updatedUser = {
+        ...loggedInUser,
+        fullName: document.getElementById('editFullName').value,
+        email: document.getElementById('editEmail').value,
+        phone: document.getElementById('editPhone').value,
+        aadhar: document.getElementById('editAadhar').value,
+        address: document.getElementById('editAddress').value,
+        mandal: document.getElementById('editMandal').value,
+        district: document.getElementById('editDistrict').value,
+        state: document.getElementById('editState').value,
+        pincode: document.getElementById('editPincode').value
+    };
+    
+    // Update in localStorage
+    localStorage.setItem('loggedInUser', JSON.stringify(updatedUser));
+    
+    // Update in registeredUsers array
+    let registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+    const userIndex = registeredUsers.findIndex(u =>
+        (loggedInUser.email && u.email === loggedInUser.email) ||
+        (loggedInUser.username && u.username === loggedInUser.username) ||
+        (loggedInUser.id && u.id === loggedInUser.id)
+    );
+    if (userIndex !== -1) {
+        registeredUsers[userIndex] = {
+            ...registeredUsers[userIndex],
+            ...updatedUser,
+            complaints: Array.isArray(updatedUser.complaints)
+                ? updatedUser.complaints
+                : (registeredUsers[userIndex].complaints || [])
+        };
+    } else {
+        registeredUsers.push(updatedUser);
+    }
+    localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+    
+    // Show success message
+    const saveNotice = document.getElementById('saveNotice');
+    saveNotice.classList.add('show');
+    setTimeout(() => {
+        saveNotice.classList.remove('show');
+    }, 3000);
+    
+    // Exit edit mode
+    toggleEditMode();
+    
+    // Refresh the display
+    openProfileModal();
+    
+    // Update header with new name
+    updateUserProfile();
+});
+
+
+function closeProfileModal() {
+    document.getElementById('profileModal').classList.remove('active');
+}
+
+function switchProfileTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.profile-tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Deactivate all tab buttons
+    document.querySelectorAll('.profile-tab').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected tab
+    document.getElementById(tabName + 'Tab').classList.add('active');
+    
+    // Activate tab button
+    event.target.classList.add('active');
+}
+
+async function syncUserComplaintsWithServer(user) {
+    if (!user) return user;
+
+    const identifierAadhaar = (user.aadhar || '').toString().trim();
+    const identifierPhone = (user.phone || '').toString().trim();
+
+    if (!identifierAadhaar && !identifierPhone) {
+        return user;
+    }
+
+    const departments = ['electrical', 'education', 'health', 'transport', 'police'];
+
+    try {
+        const responses = await Promise.all(
+            departments.map(dept =>
+                fetch(`http://127.0.0.1:5000/api/complaints/${dept}`)
+                    .then(res => (res.ok ? res.json() : []))
+                    .then(items => items.map(item => ({ ...item, department: dept })))
+                    .catch(() => [])
+            )
+        );
+
+        const serverComplaints = responses
+            .flat()
+            .filter(c =>
+                (identifierAadhaar && String(c.aadhaar || '').trim() === identifierAadhaar) ||
+                (identifierPhone && String(c.phone || '').trim() === identifierPhone)
+            );
+
+        const localComplaints = Array.isArray(user.complaints) ? [...user.complaints] : [];
+
+        serverComplaints.forEach(serverComplaint => {
+            const serverDepartment = String(serverComplaint.department || '').toLowerCase();
+            const serverProblem = String(serverComplaint.problem_description || '').trim();
+            const serverTrackingId = serverComplaint.tracking_id || null;
+
+            const matchIndex = localComplaints.findIndex(localComplaint => {
+                const localDepartment = String(localComplaint.department || '').toLowerCase();
+                const localProblem = String(localComplaint.description || localComplaint.problem || '').trim();
+                return localDepartment === serverDepartment && localProblem === serverProblem;
+            });
+
+            const nextStatus = serverComplaint.status || 'Filed';
+
+            if (matchIndex !== -1) {
+                localComplaints[matchIndex] = {
+                    ...localComplaints[matchIndex],
+                    status: nextStatus,
+                    date: localComplaints[matchIndex].date || (serverComplaint.created_at || ''),
+                    tracking_id: localComplaints[matchIndex].tracking_id || serverTrackingId
+                };
+            } else {
+                localComplaints.push({
+                    subject: 'Problem submitted to ' + (serverComplaint.department || 'Department'),
+                    department: serverComplaint.department || 'N/A',
+                    description: serverComplaint.problem_description || '',
+                    problem: serverComplaint.problem_description || '',
+                    status: nextStatus,
+                    date: serverComplaint.created_at || '',
+                    phone: serverComplaint.phone || '',
+                    address: serverComplaint.address || '',
+                    mandal: serverComplaint.mandal || '',
+                    district: serverComplaint.district || '',
+                    state: serverComplaint.state || '',
+                    pincode: serverComplaint.pincode || '',
+                    aadhaar: serverComplaint.aadhaar || '',
+                    tracking_id: serverTrackingId
+                });
+            }
+        });
+
+        const updatedUser = {
+            ...user,
+            complaints: localComplaints
+        };
+
+        localStorage.setItem('loggedInUser', JSON.stringify(updatedUser));
+
+        const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+        const userIndex = registeredUsers.findIndex(u =>
+            (updatedUser.email && u.email === updatedUser.email) ||
+            (updatedUser.username && u.username === updatedUser.username) ||
+            (updatedUser.id && u.id === updatedUser.id)
+        );
+
+        if (userIndex !== -1) {
+            registeredUsers[userIndex] = {
+                ...registeredUsers[userIndex],
+                ...updatedUser,
+                complaints: updatedUser.complaints
+            };
+            localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+        }
+
+        return updatedUser;
+    } catch (error) {
+        return user;
+    }
+}
+
+function loadUserComplaints() {
+    const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    const complaintsList = document.getElementById('complaintsList');
+    
+    if (loggedInUser && loggedInUser.complaints && loggedInUser.complaints.length > 0) {
+        complaintsList.innerHTML = '';
+        loggedInUser.complaints.forEach((complaint, index) => {
+            const statusClass = complaint.status === 'Resolved' ? 'status-resolved' : 
+                               complaint.status === 'In Progress' ? 'status-in-progress' : 'status-filed';
+            
+            const statusLabel = complaint.status === 'Resolved' ? 'Solved your problem' : (complaint.status || 'Filed');
+
+            const trackingIdHTML = complaint.tracking_id ? `
+                <div class="tracking-id-section">
+                    <div class="tracking-id-label">📍 Tracking ID:</div>
+                    <div class="tracking-id-box">
+                        <span class="tracking-id-text">${complaint.tracking_id}</span>
+                        <button class="btn-copy-small" onclick="copyTrackingIdFromProfile('${complaint.tracking_id}')">Copy</button>
+                        <button class="btn-track-small" onclick="window.location.href='track_complaint.html?id=${complaint.tracking_id}'">Track Status</button>
+                    </div>
+                </div>
+            ` : '<div class="tracking-id-section"><div class="tracking-id-label">⚠️ Tracking ID not available (old complaint)</div></div>';
+            
+            const complaintHTML = `
+                <div class="complaint-card">
+                    <div class="complaint-header">
+                        <span class="complaint-id">Complaint #${(index + 1).toString().padStart(5, '0')}</span>
+                        <span class="complaint-status ${statusClass}">${statusLabel}</span>
+                    </div>
+                    <div class="complaint-subject">${complaint.subject || 'No Subject'}</div>
+                    <div class="complaint-details">${complaint.description || complaint.problem || 'No description'}</div>
+                    <div class="complaint-meta">
+                        <span>Department: <strong>${complaint.department || 'N/A'}</strong></span>
+                        <span>Submitted: <strong>${complaint.date || new Date().toLocaleDateString()}</strong></span>
+                    </div>
+                    ${trackingIdHTML}
+                </div>
+            `;
+            complaintsList.innerHTML += complaintHTML;
+        });
+    } else {
+        complaintsList.innerHTML = `
+            <div class="no-complaints">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="currentColor"/>
+                </svg>
+                <p>No complaints filed yet. Go submit a complaint!</p>
+            </div>
+        `;
+    }
+}
+
+function copyTrackingIdFromProfile(trackingId) {
+    navigator.clipboard.writeText(trackingId).then(() => {
+        // Find the button that was clicked
+        const buttons = document.querySelectorAll('.btn-copy-small');
+        buttons.forEach(button => {
+            if (button.getAttribute('onclick').includes(trackingId)) {
+                const originalText = button.textContent;
+                button.textContent = '✅ Copied!';
+                button.style.background = '#10b981';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#3b82f6';
+                }, 2000);
+            }
+        });
+    }).catch(err => {
+        alert('Failed to copy tracking ID');
+        console.error('Copy failed:', err);
+    });
+}
+
+function logoutUser() {
+    if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('loggedInUser');
+        localStorage.removeItem('citizenUser');
+        sessionStorage.removeItem('loggedInUser');
+        document.getElementById('profileMenu').classList.remove('active');
+        window.location.href = 'register.html';
+    }
+}
+
+// Localization for Login Modal
+function updateLoginLocalization() {
+    const loginTexts = {
+        en: {
+            loginTitle: "User Login",
+            loginSubtitle: "Access your citizen account",
+            emailLabel: "Email or Username",
+            passwordLabel: "Password",
+            rememberLabel: "Remember me",
+            forgotLink: "Forgot password?",
+            submitBtn: "Login",
+            registerTitle: "Create Account",
+            registerSubtitle: "Register as a citizen",
+            fullnameLabel: "Full Name",
+            regemailLabel: "Email",
+            regphoneLabel: "Phone Number",
+            regpasswordLabel: "Password",
+            confirmpasswordLabel: "Confirm Password",
+            registerBtn: "Register",
+            toggleText: "Don't have an account? ",
+            toggleLink: "Register here"
+        },
+        te: {
+            loginTitle: "వినియోగదారు లాగిన్",
+            loginSubtitle: "మీ నాగరిక ఖాతాను యాక్సెస్ చేయండి",
+            emailLabel: "ఇమెయిల్ లేదా వినియోగదారు పేరు",
+            passwordLabel: "పాస్‌వర్డ్",
+            rememberLabel: "నన్ను గుర్తుంచుకో",
+            forgotLink: "పాస్‌వర్డ్ మరచిపోయారా?",
+            submitBtn: "లాగిన్",
+            registerTitle: "ఖాతాను సృష్టించండి",
+            registerSubtitle: "నాగరికుడిగా నమోదు చేయండి",
+            fullnameLabel: "పూర్ణ పేరు",
+            regemailLabel: "ఇమెయిల్",
+            regphoneLabel: "ఫోన్ నంబర్",
+            regpasswordLabel: "పాస్‌వర్డ్",
+            confirmpasswordLabel: "పాస్‌వర్డ్‌ను నిర్ధారించండి",
+            registerBtn: "నమోదు",
+            toggleText: "ఖాతా లేదా? ",
+            toggleLink: "ఇక్కడ నమోదు చేయండి"
+        },
+        hi: {
+            loginTitle: "उपयोगकर्ता लॉगिन",
+            loginSubtitle: "अपने नागरिक खाते को एक्सेस करें",
+            emailLabel: "ईमेल या उपयोगकर्ता नाम",
+            passwordLabel: "पासवर्ड",
+            rememberLabel: "मुझे याद रखें",
+            forgotLink: "पासवर्ड भूल गए?",
+            submitBtn: "लॉगिन",
+            registerTitle: "खाता बनाएँ",
+            registerSubtitle: "नागरिक के रूप में पंजीकरण करें",
+            fullnameLabel: "पूरा नाम",
+            regemailLabel: "ईमेल",
+            regphoneLabel: "फोन नंबर",
+            regpasswordLabel: "पासवर्ड",
+            confirmpasswordLabel: "पासवर्ड की पुष्टि करें",
+            registerBtn: "पंजीकरण",
+            toggleText: "खाता नहीं है? ",
+            toggleLink: "यहां पंजीकरण करें"
+        }
+    };
+
+    window.loginLocalization = loginTexts;
+}
+
+// Enhanced setLanguage function to include login modal
+function setLanguageWithLogin(lang) {
+    // Call original translations
+    document.getElementById("title").innerText = translations[lang].title;
+    document.getElementById("subtitle").innerText = translations[lang].subtitle;
+    document.getElementById("loginLink").innerText = translations[lang].loginLink;
+    document.getElementById("search").placeholder = translations[lang].search;
+    document.getElementById("deptTitle").innerText = translations[lang].deptTitle;
+    document.getElementById("deptSubtitle").innerText = translations[lang].deptSubtitle;
+    document.getElementById("electrical").innerText = translations[lang].electrical;
+    document.getElementById("transport").innerText = translations[lang].transport;
+    document.getElementById("education").innerText = translations[lang].education;
+    document.getElementById("health").innerText = translations[lang].health;
+    document.getElementById("police").innerText = translations[lang].police;
+    document.querySelector(".ai-label").innerText = translations[lang].aiLabel;
+    document.querySelector(".ai-modal-header h3").innerHTML = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg> ${translations[lang].aiTitle}`;
+    document.getElementById("aiDescription").innerText = translations[lang].aiDescription;
+    document.getElementById("aiTextarea").placeholder = translations[lang].aiPlaceholder;
+    document.getElementById("aiAnalyzeBtn").innerText = translations[lang].aiAnalyze;
+    
+    // Update login modal texts
+    if (window.loginLocalization && window.loginLocalization[lang]) {
+        const texts = window.loginLocalization[lang];
+        document.getElementById('loginTitle').innerText = texts.loginTitle;
+        document.getElementById('loginSubtitle').innerText = texts.loginSubtitle;
+        document.getElementById('emailLabel').innerText = texts.emailLabel;
+        document.getElementById('passwordLabel').innerText = texts.passwordLabel;
+        document.getElementById('rememberLabel').innerText = texts.rememberLabel;
+        document.getElementById('forgotLink').innerText = texts.forgotLink;
+        document.getElementById('submitBtn').innerText = texts.submitBtn;
+        document.getElementById('registerTitle').innerText = texts.registerTitle;
+        document.getElementById('registerSubtitle').innerText = texts.registerSubtitle;
+        document.getElementById('fullnameLabel').innerText = texts.fullnameLabel;
+        document.getElementById('regemailLabel').innerText = texts.regemailLabel;
+        document.getElementById('regphoneLabel').innerText = texts.regphoneLabel;
+        document.getElementById('regpasswordLabel').innerText = texts.regpasswordLabel;
+        document.getElementById('confirmpasswordLabel').innerText = texts.confirmpasswordLabel;
+        document.getElementById('registerBtn').innerText = texts.registerBtn;
+        document.getElementById('toggleText').innerText = texts.toggleText;
+        document.getElementById('toggleLink').innerText = texts.toggleLink;
+    }
+    
+    // Save language preference
+    localStorage.setItem('preferredLanguage', lang);
+}
+
+// Override setLanguage to include login modal
+const originalSetLanguage = setLanguage;
+setLanguage = setLanguageWithLogin;
+
+// Initialize login localization
+updateLoginLocalization();
+
+// Debug function to check stored data
+function debugLocalStorage() {
+    console.log('=== DEBUG localStorage ===');
+    console.log('registeredUsers:', JSON.parse(localStorage.getItem('registeredUsers')));
+    console.log('loggedInUser:', JSON.parse(localStorage.getItem('loggedInUser')));
+}
+
+// Call debug on page load
+console.log('=== Page Loaded ===');
+debugLocalStorage();
+
+
+</script>
+
+</body>
+</html>
