@@ -12,7 +12,7 @@ from datetime import datetime
 app = Flask(__name__)
 CORS(app)
 
-MODEL = "tinyllama"
+MODEL = "minimax-m3:cloud"
 
 DB_CONFIG = {
     'dbname': os.environ.get('CB_DB_NAME', 'citizen_bridge'),
@@ -32,7 +32,10 @@ DEPT_TABLES = {
 }
 
 def get_db_connection():
-    return psycopg2.connect(**DB_CONFIG)
+    return psycopg2.connect(
+        **DB_CONFIG,
+        sslmode='require'
+    )
 
 def generate_tracking_id(department):
     """Generate unique tracking ID: DEPT-YYYYMMDD-XXXX"""
