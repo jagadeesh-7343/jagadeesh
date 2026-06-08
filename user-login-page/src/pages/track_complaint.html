@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Your Complaint - Citizen Bridge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .search-box {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .search-box h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            text-transform: uppercase;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .track-btn {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .track-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .example {
+            margin-top: 15px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .result-box {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .complaint-header {
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .status-submitted { background: #e3f2fd; color: #1976d2; }
+        .status-assigned { background: #fff3e0; color: #f57c00; }
+        .status-in-progress { background: #fff9c4; color: #f57f17; }
+        .status-resolved { background: #e8f5e9; color: #388e3c; }
+        .status-rejected { background: #ffebee; color: #d32f2f; }
+
+        .tracking-id {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .department {
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .dates {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .complaint-details {
+            margin-bottom: 30px;
+        }
+
+        .detail-row {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .detail-label {
+            flex: 0 0 150px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .detail-value {
+            flex: 1;
+            color: #333;
+        }
+
+        .timeline {
+            margin-top: 30px;
+        }
+
+        .timeline h3 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timeline-icon {
+            width: 24px;
+            height: 24px;
+            fill: #667eea;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 40px;
+            padding-bottom: 25px;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 9px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e0e0e0;
+        }
+
+        .timeline-item:last-child::before {
+            display: none;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 0;
+            top: 5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 3px solid #667eea;
+            background: white;
+        }
+
+        .timeline-item.active .timeline-dot {
+            background: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+        }
+
+        .timeline-content {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .timeline-status {
+            font-weight: bold;
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .timeline-notes {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .timeline-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .feedback-section {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f0f7ff;
+            border-radius: 10px;
+            border: 2px solid #667eea;
+        }
+
+        .feedback-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .star {
+            cursor: pointer;
+            font-size: 32px;
+            color: #ddd;
+            transition: color 0.2s;
+        }
+
+        .star.active,
+        .star:hover {
+            color: #ffc107;
+        }
+
+        .feedback-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .feedback-submitted {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #4caf50;
+        }
+
+        .feedback-rating {
+            font-size: 24px;
+            color: #ffc107;
+            margin-bottom: 10px;
+        }
+
+        .feedback-comment {
+            color: #555;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .feedback-date {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: #f5f5f5;
+            color: #333;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #e0e0e0;
+        }
+
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
+            }
+
+            .detail-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .detail-label {
+                flex: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Track Your Complaint</h1>
+            <p>Enter your tracking ID to check the status of your complaint</p>
+        </header>
+
+        <div class="search-box">
+            <h2>Enter Tracking ID</h2>
+            <div class="input-group">
+                <input type="text" id="trackingIdInput" placeholder="e.g., EDU-20260306-A1B2" maxlength="20">
+                <button class="track-btn" onclick="trackComplaint()">Track Now</button>
+            </div>
+            <p class="example">Example: POL-20260306-C3D4, HLT-20260305-E5F6</p>
+        </div>
+
+        <div class="result-box" id="resultBox">
+            <div id="resultContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let selectedRating = 0;
+
+        // Auto-populate tracking ID from URL parameter
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const trackingId = urlParams.get('id');
+            
+            if (trackingId) {
+                document.getElementById('trackingIdInput').value = trackingId;
+                // Auto-track if ID is in URL
+                trackComplaint();
+            }
+        });
+
+        async function trackComplaint() {
+            const trackingId = document.getElementById('trackingIdInput').value.trim().toUpperCase();
+            
+            if (!trackingId) {
+                alert('Please enter a tracking ID');
+                return;
+            }
+
+            const resultBox = document.getElementById('resultBox');
+            const resultContent = document.getElementById('resultContent');
+            
+            resultBox.classList.add('show');
+            resultContent.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading complaint details...</p></div>';
+
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/api/track/${trackingId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    displayComplaint(data.complaint);
+                } else {
+                    resultContent.innerHTML = `<div class="error-message">${data.message}</div>`;
+                }
+            } catch (error) {
+                resultContent.innerHTML = `<div class="error-message">Error: ${error.message}. Make sure the backend server is running.</div>`;
+            }
+        }
+
+        function displayComplaint(complaint) {
+            const statusClass = `status-${complaint.status.toLowerCase().replace(' ', '-')}`;
+            
+            let html = `
+                <div class="complaint-header">
+                    <span class="status-badge ${statusClass}">${complaint.status}</span>
+                    <div class="tracking-id">${complaint.tracking_id}</div>
+                    <div class="department">${complaint.department} Department</div>
+                    <div class="dates">
+                        Submitted: ${complaint.created_at}
+                        ${complaint.resolved_at ? ` | Resolved: ${complaint.resolved_at}` : ''}
+                    </div>
+                </div>
+
+                <div class="complaint-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Problem:</div>
+                        <div class="detail-value">${complaint.problem_description}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Location:</div>
+                        <div class="detail-value">${complaint.address}, ${complaint.mandal}, ${complaint.district}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Contact:</div>
+                        <div class="detail-value">${complaint.phone}</div>
+                    </div>
+                </div>
+
+                <div class="timeline">
+                    <h3>
+                        <svg class="timeline-icon" viewBox="0 0 24 24">
+                            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/>
+                        </svg>
+                        Complaint Timeline
+                    </h3>
+            `;
+
+            if (complaint.timeline && complaint.timeline.length > 0) {
+                complaint.timeline.forEach((item, index) => {
+                    const isActive = index === complaint.timeline.length - 1;
+                    html += `
+                        <div class="timeline-item ${isActive ? 'active' : ''}">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-status">${item.status}</div>
+                                ${item.notes ? `<div class="timeline-notes">${item.notes}</div>` : ''}
+                                <div class="timeline-meta">
+                                    <span>By: ${item.changed_by}</span>
+                                    <span>${item.timestamp}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                html += '<p style="color: #999;">No timeline entries yet.</p>';
+            }
+
+            html += '</div>';
+
+            // Feedback section
+            if (complaint.status === 'Resolved') {
+                if (complaint.feedback) {
+                    // Show existing feedback
+                    const stars = '⭐'.repeat(complaint.feedback.rating);
+                    html += `
+                        <div class="feedback-section">
+                            <h3>Your Feedback</h3>
+                            <div class="feedback-submitted">
+                                <div class="feedback-rating">${stars} ${complaint.feedback.rating}/5</div>
+                                ${complaint.feedback.comment ? `<div class="feedback-comment">"${complaint.feedback.comment}"</div>` : ''}
+                                <div class="feedback-date">Submitted on: ${complaint.feedback.submitted_at}</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Show feedback form
+                    html += `
+                        <div class="feedback-section" id="feedbackSection">
+                            <h3>Rate This Resolution</h3>
+                            <p style="margin-bottom: 15px; color: #666;">How satisfied are you with how your complaint was handled?</p>
+                            <div class="rating-stars" id="ratingStars">
+                                <span class="star" onclick="setRating(1)">★</span>
+                                <span class="star" onclick="setRating(2)">★</span>
+                                <span class="star" onclick="setRating(3)">★</span>
+                                <span class="star" onclick="setRating(4)">★</span>
+                                <span class="star" onclick="setRating(5)">★</span>
+                            </div>
+                            <textarea class="feedback-input" id="feedbackComment" rows="4" placeholder="Share your experience (optional)..."></textarea>
+                            <button class="track-btn" onclick="submitFeedback('${complaint.tracking_id}')">Submit Feedback</button>
+                        </div>
+                    `;
+                }
+            }
+
+            html += '<a href="register.html" class="back-btn">← Back to Home</a>';
+
+            document.getElementById('resultContent').innerHTML = html;
+        }
+
+        function setRating(rating) {
+            selectedRating = rating;
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        async function submitFeedback(trackingId) {
+            if (selectedRating === 0) {
+                alert('Please select a rating');
+                return;
+            }
+
+            const comment = document.getElementById('feedbackComment').value.trim();
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/api/complaints/feedback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        tracking_id: trackingId,
+                        rating: selectedRating,
+                        comment: comment,
+                        citizen_name: 'Citizen'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Thank you for your feedback!');
+                    trackComplaint(); // Reload to show submitted feedback
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                alert('Error submitting feedback: ' + error.message);
+            }
+        }
+
+        // Allow Enter key to track
+        document.getElementById('trackingIdInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                trackComplaint();
+            }
+        });
+    </script>
+</body>
+</html>

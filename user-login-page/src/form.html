@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Department Complaint</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    background: #f4f6f9;
+}
+
+header {
+    background: #1e3a8a;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+}
+
+.back-btn {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 8px 15px;
+    border-radius: 5px;
+    background: rgba(255,255,255,0.1);
+    transition: 0.3s;
+}
+
+.back-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.container {
+    max-width: 700px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #1e3a8a;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+textarea {
+    resize: vertical;
+    height: 100px;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: #1e3a8a;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #162d6b;
+}
+
+.success-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.success-modal.show {
+    display: flex;
+}
+
+.success-content {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.success-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.tracking-id-box {
+    background: #f0f9ff;
+    border: 2px solid #3b82f6;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+.tracking-id-label {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.tracking-id-value {
+    font-size: 28px;
+    font-weight: bold;
+    color: #1e3a8a;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+}
+
+.copy-btn {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.copy-btn:hover {
+    background: #2563eb;
+}
+
+.success-message {
+    color: #059669;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.instruction-text {
+    color: #666;
+    font-size: 14px;
+    margin: 15px 0;
+    line-height: 1.6;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.action-buttons button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-track {
+    background: linear-gradient(135deg, #fbbf24 0%, #f97316 100%);
+    color: white;
+}
+
+.btn-home {
+    background: #f5f5f5;
+    color: #333;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <a href="login.html" class="back-btn">← Back to Home</a>
+    <h1 id="deptTitle">Department</h1>
+</header>
+
+<div class="container">
+    <h2>Complaint Form</h2>
+
+    <form>
+
+        <div class="form-group">
+            <label>Aadhaar Number</label>
+            <input type="text" id="aadhaarField" maxlength="12" placeholder="Enter 12-digit Aadhaar number" required>
+        </div>
+
+        <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="phoneField" maxlength="10" placeholder="Enter 10-digit phone number" required>
+        </div>
+
+        <div class="form-group">
+            <label>Address</label>
+            <textarea id="addressField" placeholder="Enter your full address" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Mandal</label>
+            <input type="text" id="mandalField" placeholder="Enter Mandal" required>
+        </div>
+
+        <div class="form-group">
+            <label>District</label>
+            <input type="text" id="districtField" placeholder="Enter District" required>
+        </div>
+
+        <div class="form-group">
+            <label>State</label>
+            <input type="text" id="stateField" placeholder="Enter State" required>
+        </div>
+
+        <div class="form-group">
+            <label>Pin Code</label>
+            <input type="text" id="pincodeField" maxlength="6" placeholder="Enter Pin Code" required>
+        </div>
+
+        <div class="form-group">
+            <label>Problem Description</label>
+            <textarea id="problemField" placeholder="Describe your problem in detail..." required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Upload Proof Image</label>
+            <input type="file" id="proofImageField" accept="image/*">
+        </div>
+
+        <button type="submit">Submit Complaint</button>
+
+    </form>
+        <div id="submitStatus" style="margin-top:20px;text-align:center;color:#059669;font-weight:bold;"></div>
+</div>
+
+<!-- Success Modal with Tracking ID -->
+<div class="success-modal" id="successModal">
+    <div class="success-content">
+        <div class="success-icon">✅</div>
+        <div class="success-message">Complaint Submitted Successfully!</div>
+        
+        <div class="tracking-id-box">
+            <div class="tracking-id-label">Your Tracking ID</div>
+            <div class="tracking-id-value" id="trackingIdDisplay">---</div>
+            <button class="copy-btn" onclick="copyTrackingId()">📋 Copy Tracking ID</button>
+        </div>
+        
+        <div class="instruction-text">
+            ⚠️ <strong>Save this tracking ID!</strong> Use it to check your complaint status anytime without logging in.
+        </div>
+        
+        <div class="action-buttons">
+            <button class="btn-track" onclick="goToTracking()">Track Now</button>
+            <button class="btn-home" onclick="goToHome()">Return Home</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Get department name from URL
+    const params = new URLSearchParams(window.location.search);
+    const department = params.get("dept");
+
+    if (department) {
+        document.getElementById("deptTitle").innerText = department + " Department";
+    }
+
+    // Auto-fill form with logged-in user data
+    function autoFillFormData() {
+        const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+        
+        if (loggedInUser) {
+            // Fill in user's registered data
+            document.getElementById('aadhaarField').value = loggedInUser.aadhar || '';
+            document.getElementById('phoneField').value = loggedInUser.phone || '';
+            document.getElementById('addressField').value = loggedInUser.address || '';
+            document.getElementById('mandalField').value = loggedInUser.mandal || '';
+            document.getElementById('districtField').value = loggedInUser.district || '';
+            document.getElementById('stateField').value = loggedInUser.state || '';
+            document.getElementById('pincodeField').value = loggedInUser.pincode || '';
+        }
+    }
+
+    // Load and auto-fill data when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        autoFillFormData();
+    });
+
+    // Complaint form submission
+    const form = document.querySelector("form");
+    form.addEventListener("submit", async function(e) {
+        e.preventDefault();
+        
+        // Get form values using the new IDs
+        const data = {
+            department: department && department.toLowerCase().includes("police") ? "police" : department ? department.toLowerCase() : "",
+            aadhaar: document.getElementById('aadhaarField').value,
+            phone: document.getElementById('phoneField').value,
+            address: document.getElementById('addressField').value,
+            mandal: document.getElementById('mandalField').value,
+            district: document.getElementById('districtField').value,
+            state: document.getElementById('stateField').value,
+            pincode: document.getElementById('pincodeField').value,
+            problem_description: document.getElementById('problemField').value,
+            proof_image: document.getElementById('proofImageField').files[0] ? document.getElementById('proofImageField').files[0].name : ""
+        };
+        
+        // Also save complaint to logged-in user's profile
+        const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+        if (loggedInUser) {
+            const complaint = {
+                subject: 'Problem submitted to ' + (department || 'Department'),
+                department: department || 'Unknown',
+                description: data.problem_description,
+                problem: data.problem_description,
+                status: 'Submitted',
+                date: new Date().toLocaleDateString(),
+                phone: data.phone,
+                address: data.address,
+                mandal: data.mandal,
+                district: data.district,
+                state: data.state,
+                pincode: data.pincode,
+                aadhaar: data.aadhaar,
+                tracking_id: null  // Will be updated after backend response
+            };
+            
+            // Add complaint to user's complaints array
+            if (!loggedInUser.complaints) {
+                loggedInUser.complaints = [];
+            }
+            loggedInUser.complaints.push(complaint);
+            localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
+            
+            // Also update registered users list
+            let registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+            const userIndex = registeredUsers.findIndex(u =>
+                (loggedInUser.email && u.email === loggedInUser.email) ||
+                (loggedInUser.username && u.username === loggedInUser.username) ||
+                (loggedInUser.id && u.id === loggedInUser.id)
+            );
+            if (userIndex !== -1) {
+                registeredUsers[userIndex] = {
+                    ...registeredUsers[userIndex],
+                    ...loggedInUser,
+                    complaints: Array.isArray(loggedInUser.complaints) ? loggedInUser.complaints : []
+                };
+            } else {
+                registeredUsers.push(loggedInUser);
+            }
+            localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+        }
+        
+        try {
+            const response = await fetch("http://127.0.0.1:5000/api/submit-complaint", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            const statusDiv = document.getElementById("submitStatus");
+            if (result.success) {
+                // Show success modal with tracking ID
+                const trackingId = result.tracking_id || 'N/A';
+                document.getElementById('trackingIdDisplay').textContent = trackingId;
+                document.getElementById('successModal').classList.add('show');
+                
+                // Store tracking ID for later use
+                window.currentTrackingId = trackingId;
+                
+                // Update the last complaint with tracking ID in localStorage
+                const updatedUser = JSON.parse(localStorage.getItem('loggedInUser'));
+                if (updatedUser && updatedUser.complaints && updatedUser.complaints.length > 0) {
+                    updatedUser.complaints[updatedUser.complaints.length - 1].tracking_id = trackingId;
+                    localStorage.setItem('loggedInUser', JSON.stringify(updatedUser));
+                    
+                    // Also update in registeredUsers
+                    let registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+                    const userIndex = registeredUsers.findIndex(u => u.email === updatedUser.email);
+                    if (userIndex !== -1) {
+                        registeredUsers[userIndex] = updatedUser;
+                        localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+                    }
+                }
+                
+                // Clear form
+                form.reset();
+            } else {
+                statusDiv.textContent = "Submission failed: " + result.message;
+                statusDiv.style.color = "#dc2626";
+            }
+        } catch (err) {
+            let errorMsg = "Error submitting complaint.";
+            if (err && err.message) {
+                errorMsg += " " + err.message;
+            }
+            // Try to extract backend error from response if available
+            if (err && err.response) {
+                err.response.json().then(res => {
+                    document.getElementById("submitStatus").textContent = errorMsg + (res.message ? (" " + res.message) : "");
+                }).catch(() => {
+                    document.getElementById("submitStatus").textContent = errorMsg;
+                });
+            } else {
+                // Even if backend not available, complaint is saved to localStorage
+                document.getElementById("submitStatus").textContent = "Complaint saved locally! (Backend unavailable)";
+                document.getElementById("submitStatus").style.color = "#059669";
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+            }
+        }
+    });
+
+    // Helper functions for success modal
+    function copyTrackingId() {
+        const trackingId = window.currentTrackingId || document.getElementById('trackingIdDisplay').textContent;
+        navigator.clipboard.writeText(trackingId).then(() => {
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = '✅ Copied!';
+            btn.style.background = '#059669';
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '#3b82f6';
+            }, 2000);
+        }).catch(err => {
+            alert('Failed to copy. Please copy manually: ' + trackingId);
+        });
+    }
+
+    function goToTracking() {
+        const trackingId = window.currentTrackingId;
+        window.location.href = `track_complaint.html?id=${trackingId}`;
+    }
+
+    function goToHome() {
+        window.location.href = 'login.html';
+    }
+</script>
+
+</body>
+</html>
